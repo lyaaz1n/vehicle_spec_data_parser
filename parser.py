@@ -22,9 +22,9 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 import htmls
 
 class Parser:
-    def __init__(self, table=None, link=None):
-        self.table = table
+    def __init__(self, link=None, brand=None):
         self.link = link
+        self.brand = brand
 
 
 class Brand(Parser):
@@ -60,28 +60,32 @@ class Brand(Parser):
 
 class Model(Parser):
     def get_data(self):
-
-        models = pd.DataFrame()
-        brands = self.table
-        for i in brands.itertuples():
-            g = i[2]
-            br = i[1]  # Brand name
+        models = pd.DataFrame(columns=['brand', 'model', 'link'])
+        g = self.link
+        br = self.brand  # Brand name
+        print(g)
+        print(br)
+        try:
             responce = rq.get(g).text
             soup = BeautifulSoup(responce, 'lxml')
-            f = soup.find_all(htmls.base_model_f[0], class_=htmls.base_model_f[1])
-            if f is None:
-                print('base_model_f tag is empty')
-            else:
-                for i in f:
-                    p = i.find_all(htmls.base_model_p[0], class_=htmls.base_model_p[1])
-                    if p is None:
-                        print('base_model_p tag is empty')
-                    else:
-                        for i in p:
-                            lnk = i.get('href')
-                            modelname = i.text
-                            # print(modelname)
-                            models = models.append({'brand': br, 'model': modelname, 'link': lnk}, ignore_index=True)
+        except:
+            time.sleep(1)
+            print(str(g) + ' no responce')
+
+        f = soup.find_all(htmls.base_model_f[0], class_=htmls.base_model_f[1])
+        if f is None:
+            print('base_model_f tag is empty')
+        else:
+            for i in f:
+                p = i.find_all(htmls.base_model_p[0], class_=htmls.base_model_p[1])
+                if p is None:
+                    print('base_model_p tag is empty')
+                else:
+                    for i in p:
+                        lnk = i.get('href')
+                        modelname = i.text
+                        # print(modelname)
+                        models = models.append({'brand': br, 'model': modelname, 'link': lnk}, ignore_index=True)
 
         return models
 

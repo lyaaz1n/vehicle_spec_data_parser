@@ -1,3 +1,3 @@
 
-core_dir = r'C:\Users\a.lyzin\Downloads\drom\Downloads'
+core_dir = r'C:\Users\user\Downloads\'
 
